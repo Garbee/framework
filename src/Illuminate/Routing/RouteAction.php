@@ -39,7 +39,10 @@ class RouteAction
             $action['uses'] = static::findCallable($action);
         }
 
-        if (is_string($action['uses']) && ! Str::contains($action['uses'], '@')) {
+        // If the uses property is a string we check that it has a callable structure.
+        // The dynamic invocation will be set if the string is not a callable item.
+        // This provides a full uses property for the rest of the routing engine.
+        if (is_string($action['uses']) && ! Str::contains($action['uses'], ['@', '::'])) {
             $action['uses'] = static::makeInvokable($action['uses']);
         }
 

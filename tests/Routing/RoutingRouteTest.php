@@ -893,6 +893,26 @@ class RoutingRouteTest extends TestCase
         $router->dispatch(Request::create('/'));
     }
 
+    public function testCallableAction()
+    {
+        $router = $this->getRouter();
+
+        $router->get('/', ['uses' => ['Illuminate\Tests\Routing\RouteTestControllerStub', 'index']]);
+        $router->dispatch(Request::create('/'));
+
+        $router->get('/', ['uses' => ['Illuminate\Tests\Routing\RouteTestControllerStub', 'staticIndex']]);
+        $router->dispatch(Request::create('/'));
+
+        $router->get('/', ['uses' => 'Illuminate\Tests\Routing\RouteTestControllerStub::staticIndex']);
+        $router->dispatch(Request::create('/'));
+
+        $router->get('/', ['uses' => [ActionStub::class]]);
+        $router->dispatch(Request::create('/'));
+
+        $router->get('/', ['uses' => ActionStub::class]);
+        $router->dispatch(Request::create('/'));
+    }
+
     public function testResourceRouting()
     {
         $router = $this->getRouter();
@@ -1255,6 +1275,11 @@ class RouteTestControllerStub extends Controller
     public function index()
     {
         return 'Hello World';
+    }
+
+    public static function staticIndex()
+    {
+        return 'Hello Static World';
     }
 }
 

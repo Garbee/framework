@@ -4,6 +4,7 @@ namespace Illuminate\Routing;
 
 use Closure;
 use LogicException;
+use ReflectionClass;
 use ReflectionFunction;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
@@ -184,6 +185,27 @@ class Route
     protected function runCallable()
     {
         $callable = $this->action['uses'];
+
+        if (!is_object($callable)) {
+            $controllerName = $callable[0];
+            $methodName = $callable[1] ?? '__invoke';
+            $controller = new ReflectionClass($controllerName);
+
+            if ($methodName && $controller->hasMethod($methodName)) {
+                $method = $controller->getMethod($methodName);
+                if ($method->isStatic()) {
+                    return $callable(...array_values($this->resolveMethodDependencies(
+                        $this->parametersWithoutNulls(), $method
+                    )));
+                }
+
+                return $this->container->make($controllerName)->{$methodName}(
+                    ...array_values($this->resolveMethodDependencies(
+                        $this->parametersWithoutNulls(), $method
+                    ))
+                );
+            }
+        }
 
         return $callable(...array_values($this->resolveMethodDependencies(
             $this->parametersWithoutNulls(), new ReflectionFunction($this->action['uses'])
