@@ -792,9 +792,9 @@ class Blueprint
      */
     public function timestamps()
     {
-        $this->timestamp('created_at')->nullable();
+        $this->timestamp('created_at');
 
-        $this->timestamp('updated_at')->nullable();
+        $this->timestamp('updated_at');
     }
 
     /**
@@ -806,7 +806,9 @@ class Blueprint
      */
     public function nullableTimestamps()
     {
-        $this->timestamps();
+        $this->timestamp('created_at')->nullable();
+
+        $this->timestamp('updated_at')->nullable();
     }
 
     /**
@@ -816,9 +818,9 @@ class Blueprint
      */
     public function timestampsTz()
     {
-        $this->timestampTz('created_at')->nullable();
+        $this->timestampTz('created_at');
 
-        $this->timestampTz('updated_at')->nullable();
+        $this->timestampTz('updated_at');
     }
 
     /**
